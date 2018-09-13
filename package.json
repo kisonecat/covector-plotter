@@ -9,6 +9,7 @@
   "author": "Jim Fowler",
   "license": "AGPL-3.0",
   "dependencies": {
+    "dat.gui": "^0.7.2",
     "gl-matrix": "^2.8.1",
     "pan-zoom": "^3.3.0",
     "rollup": "^0.65.2",

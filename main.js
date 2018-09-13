@@ -2,13 +2,45 @@ import panzoom from 'pan-zoom';
 import {mat3, vec2} from 'gl-matrix';
 import vertexShaderGLSL from './vertex.glsl';
 import fragmentShaderGLSL from './fragment.glsl';
-import complexShaderGLSL from './reim.glsl';
+//import complexShaderGLSL from './reim.glsl';
+
+import * as dat from 'dat.gui';
+const gui = new dat.GUI();
+
+var Parameters = function() {
+    this.bounds = '1.0 - x*x - y*y + z';
+    this.rootDarkening = 0.85;
+    this.rootDarkeningSharpness = 1;
+    this.poleLightening = 0.85;
+    this.poleLighteningSharpness = 30;
+    this.rectangularGridOpacity = 0.1;
+    this.polarGridOpacity = 0.7;
+    this.pixelRatio = window.devicePixelRatio;
+};
+
+					      
+var parameters = new Parameters();
+
+var f2 = gui.addFolder('Colors');
+
+function update() {
+    window.requestAnimationFrame(drawScene);
+}
+
+f2.add(parameters, 'rootDarkening', 0, 1 ).onChange( update );
+f2.add(parameters, 'rootDarkeningSharpness', 1, 40 ).onChange( update );
+f2.add(parameters, 'poleLightening', 0, 1 ).onChange( update );
+f2.add(parameters, 'poleLighteningSharpness', 0, 40 ).onChange( update );
+f2.add(parameters, 'rectangularGridOpacity', 0, 1 ).onChange( update );
+f2.add(parameters, 'polarGridOpacity', 0, 1 ).onChange( update );
+f2.add(parameters, 'pixelRatio', 0, 2 ).onChange( update );
+
 
 var gl;
 
 function initGL(canvas) {
     try {
-        gl = canvas.getContext("webgl");
+        gl = canvas.getContext("webgl2");
 
 	var width = gl.canvas.clientWidth;
 	var height = gl.canvas.clientHeight;
@@ -24,7 +56,7 @@ var shaderProgram;
 function initShaders() {
     console.log("initshaders");
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fragmentShader, complexShaderGLSL + fragmentShaderGLSL);
+    gl.shaderSource(fragmentShader, fragmentShaderGLSL);
     gl.compileShader(fragmentShader);
     
     if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
@@ -62,23 +94,29 @@ function initShaders() {
     shaderProgram.uPanzoomMatrix = gl.getUniformLocation(shaderProgram, "uPanzoomMatrix");
     //shaderProgram.ViewportSizeUniform = gl.getUniformLocation(shaderProgram, "uViewportSize");
 
+    
+    shaderProgram.rootDarkening = gl.getUniformLocation(shaderProgram, "rootDarkening");
+    shaderProgram.rootDarkeningSharpness = gl.getUniformLocation(shaderProgram, "rootDarkeningSharpness");
+    shaderProgram.poleLightening = gl.getUniformLocation(shaderProgram, "poleLightening");
+    shaderProgram.poleLighteningSharpness = gl.getUniformLocation(shaderProgram, "poleLighteningSharpness");
+    shaderProgram.rectangularGridOpacity = gl.getUniformLocation(shaderProgram, "rectangularGridOpacity");
+    shaderProgram.polarGridOpacity = gl.getUniformLocation(shaderProgram, "polarGridOpacity");
+    shaderProgram.pixelRatio = gl.getUniformLocation(shaderProgram, "pixelRatio");
 }
 
 var panzoomMatrix = mat3.create();
 var viewportMatrix = mat3.create();
 
 function setUniforms() {
-    window.gl = gl;
-    //gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-    //panzoomMatrix = [[1,0,0],[0,1,0],[0,0,1]];
     gl.uniformMatrix3fv(shaderProgram.uPanzoomMatrix, false, panzoomMatrix);
-    /*
-gl.uniform2f(
-                shaderProgram.ViewportSizeUniform, 
-                gl.viewportWidth, 
-                gl.viewportHeight
-                );
-    */
+
+    gl.uniform1f(shaderProgram.rootDarkening, parameters.rootDarkening);
+    gl.uniform1f(shaderProgram.rootDarkeningSharpness, parameters.rootDarkeningSharpness);
+    gl.uniform1f(shaderProgram.poleLightening, parameters.poleLightening);
+    gl.uniform1f(shaderProgram.poleLighteningSharpness, parameters.poleLighteningSharpness);
+    gl.uniform1f(shaderProgram.rectangularGridOpacity, parameters.rectangularGridOpacity);
+    gl.uniform1f(shaderProgram.polarGridOpacity, parameters.polarGridOpacity);
+    gl.uniform1f(shaderProgram.pixelRatio, parameters.pixelRatio);
 }
  
 var squareVertexPositionBuffer;
@@ -103,8 +141,8 @@ var viewportScale = 1.0;
 function drawScene() {
     resize(gl.canvas);
 
-    var height = gl.canvas.clientHeight;
-    var width = gl.canvas.clientWidth;
+    var height = gl.canvas.clientHeight * parameters.pixelRatio;
+    var width = gl.canvas.clientWidth * parameters.pixelRatio;
     var aspectRatio = width / height;
 
     var m = width;
@@ -133,9 +171,9 @@ window.addEventListener("resize", function() {
 
 function resize(canvas) {
     // Lookup the size the browser is displaying the canvas.
-    var displayWidth  = canvas.clientWidth;
-    var displayHeight = canvas.clientHeight;
-    
+    var displayWidth  = canvas.clientWidth * parameters.pixelRatio;
+    var displayHeight = canvas.clientHeight * parameters.pixelRatio;
+        
     // Check if the canvas is not the same size.
     if (canvas.width  != displayWidth ||
 	canvas.height != displayHeight) {
@@ -149,7 +187,7 @@ function resize(canvas) {
 function webGLStart() {
     const canvas = document.querySelector("#glCanvas");
     // Initialize the GL context
-    const gl = canvas.getContext("webgl");
+    const gl = canvas.getContext("webgl2");
     
     // Only continue if WebGL is available and working
     if (gl === null) {
