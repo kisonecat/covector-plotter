@@ -21,20 +21,18 @@ var Parameters = function() {
 					      
 var parameters = new Parameters();
 
-var f2 = gui.addFolder('Colors');
+var colorFolder = gui.addFolder('Colors');
 
 function update() {
     window.requestAnimationFrame(drawScene);
 }
 
-f2.add(parameters, 'rootDarkening', 0, 1 ).onChange( update );
-f2.add(parameters, 'rootDarkeningSharpness', 1, 40 ).onChange( update );
-f2.add(parameters, 'poleLightening', 0, 1 ).onChange( update );
-f2.add(parameters, 'poleLighteningSharpness', 0, 40 ).onChange( update );
-f2.add(parameters, 'rectangularGridOpacity', 0, 1 ).onChange( update );
-f2.add(parameters, 'polarGridOpacity', 0, 1 ).onChange( update );
-f2.add(parameters, 'pixelRatio', 0, 2 ).onChange( update );
-
+colorFolder.add(parameters, 'rootDarkening', 0, 1 ).onChange( update );
+colorFolder.add(parameters, 'rootDarkeningSharpness', 1, 40 ).onChange( update );
+colorFolder.add(parameters, 'poleLightening', 0, 1 ).onChange( update );
+colorFolder.add(parameters, 'poleLighteningSharpness', 0, 40 ).onChange( update );
+colorFolder.add(parameters, 'rectangularGridOpacity', 0, 1 ).onChange( update );
+colorFolder.add(parameters, 'polarGridOpacity', 0, 1 ).onChange( update );
 
 var gl;
 
@@ -151,6 +149,12 @@ function drawScene() {
     gl.viewport((width - m)/2, (height - m)/2, m, m );
 
     viewportScale = m/2;
+
+    height = gl.canvas.clientHeight;
+    width = gl.canvas.clientWidth;
+
+    m = width;
+    if (m < height) m = height;
     
     mat3.identity(viewportMatrix);
     mat3.scale(viewportMatrix, viewportMatrix, [-2.0/m, 2.0/m]);
