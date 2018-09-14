@@ -83,8 +83,8 @@ vec2 sinhcosh (float x) {
   float ex = exp(x);
   float emx = exp(-x);
   return 0.5 * vec2(
-      ex + emx,
-      ex - emx
+      ex - emx,
+      ex + emx
                     );
 }
 
@@ -153,7 +153,7 @@ vec2 csqr (vec2 z) {
 }
 
 vec2 ccos (vec2 z) {
-  return sinhcosh(z.y) * vec2(cos(z.x), -sin(z.x));
+  return sinhcosh(z.y).yx * vec2(cos(z.x), -sin(z.x));
 }
 
 vec2 csin (vec2 z) {
@@ -281,12 +281,11 @@ float wireframe (vec4 parameter, float width) {
 uniform float rootDarkening, poleLightening;
 uniform float rootDarkeningSharpness, poleLighteningSharpness;
 uniform float rectangularGridOpacity, polarGridOpacity;
-
+uniform float axisOpacity;
 uniform float pixelRatio;
 
 vec2 theFunction(vec2 z) {
-  return cdiv(csin(z),z);
-  //return cmul(cmul(vec2(8,0.0),z),csin(z));
+  return THEFUNCTIONGOESHERE;
 }
 
 vec3 domainColoring (
@@ -312,6 +311,7 @@ vec3 domainColoring (
   float polarGrid = mix(1.0 - polarGridStrength, 1.0, polarGridFactor);
   float rectGridFactor = 1.0 - (1.0 - poleLighteningFactor) * (1.0 - wireframe((z / rectGridSpacing), lineWidth, 1.0));
   float rectGrid = mix(1.0 - rectGridStrength, 1.0, rectGridFactor);
+  
   return mix(
       vec3(1.0),
       mix(
@@ -326,8 +326,8 @@ vec3 domainColoring (
 out vec4 color;
 
 void main () {
-  color = vec4(domainColoring(
-      theFunction(2.0 * z),              // The evaluated function!
+  vec3 domain = domainColoring(
+      theFunction(z),              // The evaluated function!
       vec2(0.125, 1.0),        // Polar grid spacing
       polarGridOpacity,        // Polar grid strength
       vec2(1.0),               // Rectangular grid spacing
@@ -337,5 +337,17 @@ void main () {
       rootDarkening,           // Root darkening strength
       rootDarkeningSharpness,  // Root darkening sharpness
       0.5 * pixelRatio         // Line thickness
-                                     ), 1.0);
+                               );
+
+  float axisGrid = wireframe(z, 0.60*pixelRatio, 1.0);
+  float yAxis = 1.0 - step( z.x, 0.020 ) * step( -z.x, 0.020 ) * (1.0 - axisGrid);
+  float xAxis = 1.0 - step( z.y, 0.020 ) * step( -z.y, 0.020 ) * (1.0 - axisGrid);
+
+  float tickGrid = wireframe(z*10.0, 0.30*pixelRatio, 1.0);
+  float yTick = 1.0 - step( z.x, 0.010 ) * step( -z.x, 0.010 ) * (1.0 - tickGrid);
+  float xTick = 1.0 - step( z.y, 0.010 ) * step( -z.y, 0.010 ) * (1.0 - tickGrid);
+  
+  domain = mix( vec3(0.0), domain, min(1.0, xAxis * yAxis * xTick * yTick + 1.0 - axisOpacity) );
+  
+  color = vec4(domain, 1.0);
 }
