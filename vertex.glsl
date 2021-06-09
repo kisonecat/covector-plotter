@@ -7,12 +7,12 @@ uniform mat3 uPanzoomMatrix;
       
 //These will be passed to the fragment shader and will be interpreted per
 //pixel
-out vec2 z;
+out vec2 point;
       
 void main(void) {
   //gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
   //The line below will ignore any translation of perspective matrix
   gl_Position =  vec4(aVertexPosition, 1.0);
   //gl_Position = gl_Vertex;
-  z = vec2(uPanzoomMatrix * vec3(aVertexPosition.x,aVertexPosition.y, 1.0));
+  point = vec2(uPanzoomMatrix * vec3(aVertexPosition.x,aVertexPosition.y, 1.0));
 }

@@ -1,19 +1,31 @@
-# Phase plotter
+# Covector plotter
 
-Use WebGL to explore complex-valued functions.
+Use WebGL to explore covectors.
 
 ## See it in action
 
-Go to [the website](https://kisonecat.github.io/phase-plot/).
+Go to [the website](https://kisonecat.github.io/covector-plotter/).
 
-You can share your favorite expressions by appending `#f=z^2` or the like.  For instance,
+You can share your favorite expressions by appending `#f=y&g=-x` or the like.  For instance,
 
-* [z/w](https://kisonecat.github.io/phase-plot/#f=z/w)
-* [z/(z-w)](https://kisonecat.github.io/phase-plot/#f=z/(z-w))
-* [exp(1/z)](https://kisonecat.github.io/phase-plot/#f=exp(1/z))
+* [y dx - x dy](https://kisonecat.github.io/phase-plot/#f=y&g=-x)
 
-Note that the variable `w` represents the mouse position.
+Note that the variables `u` and `v` represents the mouse position `(u,v)`.
 
 ## Credits and acknowledgments
 
-This code uses a modified version of the domain coloring fragment shader from [@rreusser](https://beta.observablehq.com/@rreusser/domain-coloring-for-complex-functions), and relies on npm packages like [pan-zoom](https://www.npmjs.com/package/pan-zoom) and [dat.gui](https://github.com/dataarts/dat.gui).  Mathematical expressions are parsed and converted into GLSL using [math-expressions](https://github.com/kisonecat/math-expressions).  In spirit, this is a WebGL version of [the old plotter](https://people.math.osu.edu/fowler.291/phase/) which owes much of its existence to Steve Gubkin.
+Steve Gubkin had the insight of plotting 1-forms this way.
+
+This code uses some of the GLSL code from
+[@rreusser](https://beta.observablehq.com/@rreusser/domain-coloring-for-complex-functions),
+and relies on npm packages like
+[pan-zoom](https://www.npmjs.com/package/pan-zoom) and
+[dat.gui](https://github.com/dataarts/dat.gui).  Mathematical
+expressions are parsed and converted into GLSL using
+[math-expressions](https://github.com/kisonecat/math-expressions).  In
+spirit, this is a WebGL version of [the old
+plotter](https://people.math.osu.edu/fowler.291/phase/) which owes
+much of its existence to Steve Gubkin.
+
+
+

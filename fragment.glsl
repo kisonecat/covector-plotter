@@ -3,44 +3,31 @@
 //precision mediump float;
 precision highp float;
 
-in vec2 z;
+in vec2 point;
 
-uniform vec2 a;
-uniform vec2 b;
-uniform vec2 c;
-uniform vec2 d;
-uniform vec2 e;
-uniform vec2 f;
-uniform vec2 g;
-uniform vec2 h;
-uniform vec2 j;
-uniform vec2 k;
-uniform vec2 l;
-uniform vec2 m;
-uniform vec2 n;
-uniform vec2 o;
-uniform vec2 p;
-uniform vec2 q;
-uniform vec2 r;
-uniform vec2 s;
-uniform vec2 t;
-uniform vec2 u;
-uniform vec2 v;
-uniform vec2 w;
-uniform vec2 x;
-uniform vec2 y;
-
-/*
- domainColoringParameters = ({
-  rootDarkening,
-  poleLightening,
-  rectangularGridOpacity,
-  polarGridOpacity,
-  rootDarkeningSharpness,
-  poleLighteningSharpness
-})
-*/  
-
+uniform float a;
+uniform float b;
+uniform float c;
+uniform float d;
+uniform float e;
+uniform float f;
+uniform float g;
+uniform float h;
+uniform float j;
+uniform float k;
+uniform float l;
+uniform float m;
+uniform float n;
+uniform float o;
+uniform float p;
+uniform float q;
+uniform float r;
+uniform float s;
+uniform float t;
+uniform float u;
+uniform float v;
+uniform float w;
+uniform float z;
 
 //    #extension GL_OES_standard_derivatives : enable
 
@@ -48,8 +35,8 @@ uniform vec2 y;
 #define HALF_PI 1.57079632679
 #define HALF_PI_INV 0.15915494309
 #define LOG_2 0.69314718056
-#define C_ONE (vec2(1.0, 0.0))
-#define C_I (vec2(0.0, 1.0))
+#define C_ONE 1.0
+#define C_I 0.0
 #define TO_RADIANS 0.01745329251
 
 
@@ -59,142 +46,76 @@ vec3 hsv2rgb(vec3 c) {
   return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-
-float hypot (vec2 z) {
-  float t;
-  float x = abs(z.x);
-  float y = abs(z.y);
-  t = min(x, y);
-  x = max(x, y);
-  t = t / x;
-  return x * sqrt(1.0 + t * t);
+float cmul (float a, float b) {
+  return a*b;
 }
 
-/*
-float cosh (float x) {
-  return 0.5 * (exp(x) + exp(-x));
+float cdiv (float a, float b) {
+  return a/b;
 }
 
-float sinh (float x) {
-  return 0.5 * (exp(x) - exp(-x));
-  }*/
-
-vec2 sinhcosh (float x) {
-  float ex = exp(x);
-  float emx = exp(-x);
-  return 0.5 * vec2(
-      ex - emx,
-      ex + emx
-                    );
+float cinv (float z) {
+  return 1.0/z;
 }
 
-vec2 cmul (vec2 a, vec2 b) {
-  return vec2(
-      a.x * b.x - a.y * b.y,
-      a.y * b.x + a.x * b.y
-              );
+float cexp (float z) {
+  return exp(z);
 }
 
-vec2 cmul (vec2 a, vec2 b, vec2 c) {
-  return cmul(cmul(a, b), c);
+float clog (float z) {
+  return log(z);
 }
 
-vec2 cdiv (vec2 a, vec2 b) {
-  return vec2(
-      a.y * b.y + a.x * b.x,
-      a.y * b.x - a.x * b.y
-              ) / dot(b, b);
+float cpolar (float z) {
+  return 0.0;
 }
 
-vec2 cinv (vec2 z) {
-  return vec2(z.x, -z.y) / dot(z, z);
+float cpower (float z, float x) {
+  return pow(z,x);
 }
 
-vec2 cexp (vec2 z) {
-  return vec2(cos(z.y), sin(z.y)) * exp(z.x);
+float csqrt (float z) {
+  return sqrt(z);
 }
 
-vec2 clog (vec2 z) {
-  return vec2(
-      log(hypot(z)),
-      atan(z.y, z.x)
-              );
+float csqr (float z) {
+  return z*z;
 }
 
-vec2 cpolar (vec2 z) {
-  return vec2(
-      atan(z.y, z.x),
-      hypot(z)
-              );
+float ccos (float z) {
+  return cos(z);
 }
 
-vec2 cpower (vec2 z, float x) {
-  float r = hypot(z);
-  float theta = atan(z.y, z.x) * x;
-  return vec2(cos(theta), sin(theta)) * pow(r, x);
+float csin (float z) {
+  return sin(z);
 }
 
-vec2 cpower (vec2 a, vec2 b) {
-  float aarg = atan(a.y, a.x);
-  float amod = hypot(a);
-  float theta = log(amod) * b.y + aarg * b.x;
-  return vec2(cos(theta), sin(theta)) * pow(amod, b.x) * exp(-aarg * b.y);
+float ctan (float z) {
+  return tan(z);
 }
 
-vec2 csqrt (vec2 z) {
-  vec2 zpolar = cpolar(z);
-  float theta = zpolar.x * 0.5;
-  float mod = sqrt(zpolar.y);
-  return vec2(cos(theta), sin(theta)) * mod;
+float cacos (float z) {
+  return acos(z);
 }
 
-vec2 csqr (vec2 z) {
-  return vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y);
+float casin (float z) {
+  return asin(z);
 }
 
-vec2 ccos (vec2 z) {
-  return sinhcosh(z.y).yx * vec2(cos(z.x), -sin(z.x));
+float catan (float z) {
+  return atan(z);
 }
 
-vec2 csin (vec2 z) {
-  return sinhcosh(z.y).yx * vec2(sin(z.x), cos(z.x));
+float ccosh (float z) {
+  return cosh(z);  
 }
 
-vec2 ctan (vec2 z) {
-  vec2 e2iz = cexp(2.0 * vec2(-z.y, z.x));
-  return cdiv(e2iz - C_ONE, cmul(C_I, C_ONE + e2iz));
+float csinh (float z) {
+  return sinh(z);    
 }
 
-vec2 cacos (vec2 z) {
-  vec2 t1 = csqrt(vec2(z.y * z.y - z.x * z.x + 1.0, -2.0 * z.x * z.y));
-  vec2 t2 = clog(vec2(t1.x - z.y, t1.y + z.x));
-  return vec2(HALF_PI - t2.y, t2.x);
-}
-
-vec2 casin (vec2 z) {
-  vec2 t1 = csqrt(vec2(z.y * z.y - z.x * z.x + 1.0, -2.0 * z.x * z.y));
-  vec2 t2 = clog(vec2(t1.x - z.y, t1.y + z.x));
-  return vec2(t2.y, -t2.x);
-}
-
-vec2 catan (vec2 z) {
-  float d = z.x * z.x + (1.0 - z.y) * (1.0 - z.y);
-  vec2 t1 = clog(vec2(1.0 - z.y * z.y - z.x * z.x, -2.0 * z.x) / d);
-  return 0.5 * vec2(-t1.y, t1.x);
-}
-
-vec2 ccosh (vec2 z) {
-  return sinhcosh(z.x).yx * vec2(cos(z.y), sin(z.y));
-}
-
-vec2 csinh (vec2 z) {
-  return sinhcosh(z.x) * vec2(cos(z.y), sin(z.y));
-}
-
-vec2 ctanh (vec2 z) {
-  vec2 ez = cexp(z);
-  vec2 emz = cexp(-z);
-  return cdiv(ez - emz, ez + emz);
+float ctanh (float z) {
+  return tanh(z);  
 }
 
 // https://github.com/d3/d3-color
@@ -283,71 +204,24 @@ uniform float rootDarkeningSharpness, poleLighteningSharpness;
 uniform float rectangularGridOpacity, polarGridOpacity;
 uniform float axisOpacity;
 uniform float pixelRatio;
+uniform float boxSize;
 
-vec2 theFunction(vec2 z) {
-  return THEFUNCTIONGOESHERE;
+float theFunctionF(float x, float y) {
+  return THEFUNCTIONGOESHERE_F;
 }
 
-vec3 domainColoring (
-    vec2 z,
-    vec2 polarGridSpacing,
-    float polarGridStrength,
-    vec2 rectGridSpacing,
-    float rectGridStrength,
-    float poleLightening,
-    float poleLighteningSharpness,
-    float rootDarkening,
-    float rootDarkeningSharpness,
-    float lineWidth
-                     ) {
-  vec2 zpolar = cpolar(z);
-  float carg = zpolar.x * HALF_PI_INV;
-  float logmag = log2(zpolar.y) * 0.5 / LOG_2;
-  float rootDarkeningFactor = pow(2.0, -zpolar.y * rootDarkeningSharpness);
-  float rootDarkness = 1.0 - rootDarkening * rootDarkeningFactor;
-  float poleLighteningFactor = 1.0 - pow(2.0, -zpolar.y / poleLighteningSharpness);
-  float poleLightness = 1.0 - poleLightening * poleLighteningFactor;
-  float polarGridFactor = wireframe((vec2(carg, logmag) / polarGridSpacing), lineWidth, 1.0);
-  float polarGrid = mix(1.0 - polarGridStrength, 1.0, polarGridFactor);
-  float rectGridFactor = 1.0 - (1.0 - poleLighteningFactor) * (1.0 - wireframe((z / rectGridSpacing), lineWidth, 1.0));
-  float rectGrid = mix(1.0 - rectGridStrength, 1.0, rectGridFactor);
-  
-  return mix(
-      vec3(1.0),
-      mix(
-          vec3(0.0),
-          mix(vec3(1.0), cubehelixRainbow(carg + 0.25) * rootDarkness, poleLightness),
-          mix(rectGrid, max(rectGrid, 1.0 - polarGridFactor), polarGridStrength)
-          ),
-      polarGrid
-             );
+float theFunctionG(float x, float y) {
+  return THEFUNCTIONGOESHERE_G;
 }
 
 out vec4 color;
 
 void main () {
-  vec3 domain = domainColoring(
-      theFunction(z),              // The evaluated function!
-      vec2(0.125, 1.0),        // Polar grid spacing
-      polarGridOpacity,        // Polar grid strength
-      vec2(1.0),               // Rectangular grid spacing
-      rectangularGridOpacity,  // Rectangular grid strength
-      poleLightening,          // Pole lightening strength
-      poleLighteningSharpness, // Pole ligthening sharpness
-      rootDarkening,           // Root darkening strength
-      rootDarkeningSharpness,  // Root darkening sharpness
-      0.5 * pixelRatio         // Line thickness
-                               );
 
-  float axisGrid = wireframe(z, 0.60*pixelRatio, 1.0);
-  float yAxis = 1.0 - step( z.x, 0.020 ) * step( -z.x, 0.020 ) * (1.0 - axisGrid);
-  float xAxis = 1.0 - step( z.y, 0.020 ) * step( -z.y, 0.020 ) * (1.0 - axisGrid);
+  vec2 p = mod(point, boxSize) / boxSize;
 
-  float tickGrid = wireframe(z*10.0, 0.30*pixelRatio, 1.0);
-  float yTick = 1.0 - step( z.x, 0.010 ) * step( -z.x, 0.010 ) * (1.0 - tickGrid);
-  float xTick = 1.0 - step( z.y, 0.010 ) * step( -z.y, 0.010 ) * (1.0 - tickGrid);
+  float f = theFunctionF(point.x, point.y);
+  float g = theFunctionG(point.x, point.y);  
   
-  domain = mix( vec3(0.0), domain, min(1.0, xAxis * yAxis * xTick * yTick + 1.0 - axisOpacity) );
-  
-  color = vec4(domain, 1.0);
+  color = vec4(p.x, p.y, 0, 1.0);
 }
