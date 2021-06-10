@@ -81,7 +81,7 @@ function update() {
 }
 
 gui.add(parameters, 'boxSize', 0, 2 ).onChange( update ).listen();
-gui.add(parameters, 'lineSpacing', 0, 2 ).onChange( update ).listen();
+gui.add(parameters, 'lineSpacing', 0, 1 ).onChange( update ).listen();
 
 /*
 colorFolder.add(parameters, 'rootDarkeningSharpness', 1, 40 ).onChange( update ).listen();
