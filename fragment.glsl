@@ -1,4 +1,5 @@
 #version 300 es
+// #extension GL_OES_standard_derivatives : enable
 
 //precision mediump float;
 precision highp float;
@@ -29,8 +30,6 @@ uniform float v;
 uniform float w;
 uniform float z;
 
-//    #extension GL_OES_standard_derivatives : enable
-
 #define PI 3.141592653589793238
 #define HALF_PI 1.57079632679
 #define HALF_PI_INV 0.15915494309
@@ -46,76 +45,76 @@ vec3 hsv2rgb(vec3 c) {
   return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-float cmul (float a, float b) {
-  return a*b;
+vec2 cmul (vec2 a, vec2 b) {
+  return vec2(a.x*b.x,0.0);  
 }
 
-float cdiv (float a, float b) {
-  return a/b;
+vec2 cdiv (vec2 a, vec2 b) {
+  return vec2(a.x/b.x,0.0);
 }
 
-float cinv (float z) {
-  return 1.0/z;
+vec2 cinv (vec2 z) {
+  return vec2(1.0/z.x,0.0);
 }
 
-float cexp (float z) {
-  return exp(z);
+vec2 cexp (vec2 z) {
+  return vec2(exp(z.x),0.0);
 }
 
-float clog (float z) {
-  return log(z);
+vec2 clog (vec2 z) {
+  return vec2(log(z.x),0.0);  
 }
 
-float cpolar (float z) {
-  return 0.0;
+vec2 cpolar (vec2 z) {
+  return vec2(0.0,0.0);
 }
 
-float cpower (float z, float x) {
-  return pow(z,x);
+vec2 cpower (vec2 z, vec2 x) {
+  return vec2(pow(z.x,x.x),0.0);  
 }
 
-float csqrt (float z) {
-  return sqrt(z);
+vec2 csqrt (vec2 z) {
+  return vec2(sqrt(z.x),0.0);    
 }
 
-float csqr (float z) {
-  return z*z;
+vec2 csqr (vec2 z) {
+  return vec2(z.x*z.x,0.0);      
 }
 
-float ccos (float z) {
-  return cos(z);
+vec2 ccos (vec2 z) {
+  return vec2(cos(z.x),0.0);      
 }
 
-float csin (float z) {
-  return sin(z);
+vec2 csin (vec2 z) {
+  return vec2(sin(z.x),0.0);        
 }
 
-float ctan (float z) {
-  return tan(z);
+vec2 ctan (vec2 z) {
+  return vec2(tan(z.x),0.0);        
 }
 
-float cacos (float z) {
-  return acos(z);
+vec2 cacos (vec2 z) {
+  return vec2(acos(z.x),0.0);        
 }
 
-float casin (float z) {
-  return asin(z);
+vec2 casin (vec2 z) {
+  return vec2(asin(z.x),0.0);        
 }
 
-float catan (float z) {
-  return atan(z);
+vec2 catan (vec2 z) {
+  return vec2(atan(z.x),0.0);        
 }
 
-float ccosh (float z) {
-  return cosh(z);  
+vec2 ccosh (vec2 z) {
+  return vec2(cosh(z.x),0.0);        
 }
 
-float csinh (float z) {
-  return sinh(z);    
+vec2 csinh (vec2 z) {
+  return vec2(sinh(z.x),0.0);        
 }
 
-float ctanh (float z) {
-  return tanh(z);  
+vec2 ctanh (vec2 z) {
+  return vec2(tanh(z.x),0.0);        
 }
 
 // https://github.com/d3/d3-color
@@ -141,62 +140,11 @@ vec3 cubehelixRainbow(float t) {
 }
 
 // https://github.com/rreusser/glsl-solid-wireframe
-float wireframe (float parameter, float width, float feather) {
+float wireframe (float parameter, float width, float feather, float d) {
   float w1 = width - feather * 0.5;
-  float d = fwidth(parameter);
+  //float d = fwidth(parameter);
   float looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);
   return smoothstep(d * w1, d * (w1 + feather), looped);
-}
-
-float wireframe (vec2 parameter, float width, float feather) {
-  float w1 = width - feather * 0.5;
-  vec2 d = fwidth(parameter);
-  vec2 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);
-  vec2 a2 = smoothstep(d * w1, d * (w1 + feather), looped);
-  return min(a2.x, a2.y);
-}
-
-float wireframe (vec3 parameter, float width, float feather) {
-  float w1 = width - feather * 0.5;
-  vec3 d = fwidth(parameter);
-  vec3 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);
-  vec3 a3 = smoothstep(d * w1, d * (w1 + feather), looped);
-  return min(min(a3.x, a3.y), a3.z);
-}
-
-float wireframe (vec4 parameter, float width, float feather) {
-  float w1 = width - feather * 0.5;
-  vec4 d = fwidth(parameter);
-  vec4 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);
-  vec4 a4 = smoothstep(d * w1, d * (w1 + feather), looped);
-  return min(min(min(a4.x, a4.y), a4.z), a4.w);
-}
-
-float wireframe (float parameter, float width) {
-  float d = fwidth(parameter);
-  float looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);
-  return smoothstep(d * (width - 0.5), d * (width + 0.5), looped);
-}
-
-float wireframe (vec2 parameter, float width) {
-  vec2 d = fwidth(parameter);
-  vec2 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);
-  vec2 a2 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);
-  return min(a2.x, a2.y);
-}
-
-float wireframe (vec3 parameter, float width) {
-  vec3 d = fwidth(parameter);
-  vec3 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);
-  vec3 a3 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);
-  return min(min(a3.x, a3.y), a3.z);
-}
-
-float wireframe (vec4 parameter, float width) {
-  vec4 d = fwidth(parameter);
-  vec4 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);
-  vec4 a4 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);
-  return min(min(min(a4.x, a4.y), a4.z), a4.z);
 }
 
 uniform float rootDarkening, poleLightening;
@@ -205,6 +153,7 @@ uniform float rectangularGridOpacity, polarGridOpacity;
 uniform float axisOpacity;
 uniform float pixelRatio;
 uniform float boxSize;
+uniform float lineSpacing;
 
 float theFunctionF(float x, float y) {
   return THEFUNCTIONGOESHERE_F;
@@ -218,10 +167,48 @@ out vec4 color;
 
 void main () {
 
-  vec2 p = mod(point, boxSize) / boxSize;
+  vec2 p = fract(point / boxSize);
 
-  float f = theFunctionF(point.x, point.y);
-  float g = theFunctionG(point.x, point.y);  
+  vec2 center = (round(point / boxSize - vec2(0.5,0.5)) + vec2(0.5,0.5)) * boxSize;
+  vec2 v = point - center;
+
+  // you may be angry I'm not using fwidth later, and clearly
+  // computing derivatives by hand below; this is because of the use
+  // of 'round' above, which would introduce artifacts if I
+  // differentiate it.
   
-  color = vec4(p.x, p.y, 0, 1.0);
+  float dpointx = fwidth(point.x);
+  float dpointy = fwidth(point.y);
+  
+  vec2 vx = point - center + vec2(dpointx,0.0);
+  vec2 vy = point - center + vec2(0.0,dpointy);
+
+  float f = theFunctionF(center.x, center.y);
+  float g = theFunctionG(center.x, center.y);
+  
+  vec2 form = vec2(f,g);
+  float result = dot(v, form);
+  float side = sign(result);
+
+  float resultx = dot(vx, form);
+  float resulty = dot(vy, form);
+
+  result = (result / lineSpacing);
+  resultx = (resultx / lineSpacing);
+  resulty = (resulty / lineSpacing);  
+  
+  float result_dx = (resultx - result);
+  float result_dy = (resulty - result);
+
+  result = fract(result);
+  float abs_dxdy = abs(result_dx) + abs(result_dy);
+  
+  result = wireframe(result, pixelRatio*0.5, 1.0, abs_dxdy );
+
+  vec4 red = vec4(1.0,0.0,0.0,1.0);
+  vec4 blue = vec4(0.0,0.0,1.0,1.0);
+
+  vec4 lineColor = mix( red, blue, (side + 1.0) / 2.0 );
+  vec4 background = vec4(1.0,1.0,1.0,1.0);
+  color = mix(lineColor, background, result );
 }

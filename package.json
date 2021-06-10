@@ -1,7 +1,7 @@
 {
-  "name": "phase-plotter",
+  "name": "covector-plotter",
   "version": "0.0.1",
-  "description": "plot complex-valued functions",
+  "description": "plot 1-forms",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

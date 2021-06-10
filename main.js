@@ -3,8 +3,6 @@ import {mat3, vec2} from 'gl-matrix';
 import vertexShaderGLSL from './vertex.glsl';
 import fragmentShaderGLSL from './fragment.glsl';
 
-import Expression from 'math-expressions/build/math-expressions.js';
-
 import * as dat from 'dat.gui';
 const gui = new dat.GUI();
 
@@ -38,8 +36,8 @@ window.addEventListener("hashchange", function () {
     updateShaders();
 }, false);
 
-var glslFunctionF = Expression.fromText(parameters.f).toGLSL();
-var glslFunctionG = Expression.fromText(parameters.g).toGLSL();
+var glslFunctionF = parameters.f;
+var glslFunctionG = parameters.g;
 
 function updateHash() {
     var properties = [];
@@ -59,11 +57,8 @@ function updateShaders() {
   updateHash();
     
   try {
-    var expressionF = Expression.fromText(parameters.f);
-    glslFunctionF = expressionF.toGLSL();
-    var expressionG = Expression.fromText(parameters.g);
-    glslFunctionG = expressionG.toGLSL();
-    console.log(glslFunctionF);
+    glslFunctionF = parameters.f;
+    glslFunctionG = parameters.g;
     initShaders();
   } catch (err) {
     console.log(err);
@@ -125,7 +120,7 @@ function initShaders() {
   gl.compileShader(fragmentShader);
     
   if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-    alert(gl.getShaderInfoLog(fragmentShader));
+    console.log(gl.getShaderInfoLog(fragmentShader));
     return null;
   }
 
@@ -134,7 +129,7 @@ function initShaders() {
   gl.compileShader(vertexShader);
 
   if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-    alert(gl.getShaderInfoLog(vertexShader));
+    console.log(gl.getShaderInfoLog(vertexShader));
     return null;
   }
 
@@ -144,7 +139,8 @@ function initShaders() {
   gl.linkProgram(shaderProgram);
  
   if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-    alert("Could not initialise shaders");
+    console.log("Could not initialise shaders");
+    return null;
   }
 
   gl.useProgram(shaderProgram);
@@ -295,8 +291,8 @@ document.querySelector("#glCanvas").addEventListener("mousemove", function(e) {
   inverse[6] = -inverse[6];
   inverse[7] = -inverse[7];
   vec2.transformMat3( point, point, inverse );
-  gl.uniform2fv(shaderProgram.variables["u"], [point[0],0.0]);
-  gl.uniform2fv(shaderProgram.variables["v"], [point[1],0.0]);
+  gl.uniform1f(shaderProgram.variables["u"], point[0]);
+  gl.uniform1f(shaderProgram.variables["v"], point[1]);
   window.requestAnimationFrame(drawScene);
 });
 
