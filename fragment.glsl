@@ -74,6 +74,7 @@ void main () {
   
   float dpointx = fwidth(point.x);
   float dpointy = fwidth(point.y);
+  float pixelSize = length(vec2(dpointx,dpointy));
   
   vec2 vx = point - center + vec2(dpointx,0.0);
   vec2 vy = point - center + vec2(0.0,dpointy);
@@ -100,12 +101,30 @@ void main () {
   
   result = wireframe(result, pixelRatio*0.3, 1.0, abs_dxdy );
 
+  // repeat but normalized
+  form = form / length(form);
+  pixelSize = 4.0*pixelSize;
+  
+  float presult = dot(v, form) / pixelSize;
+  float presultx = dot(vx, form) / pixelSize;
+  float presulty = dot(vy, form) / pixelSize;
+  
+  float presult_dx = (presultx - presult);
+  float presult_dy = (presulty - presult);
+
+  presult = fract(presult);
+  
+  float pabs_dxdy = abs(presult_dx) + abs(presult_dy);
+  
+  presult = wireframe(presult, pixelRatio*0.7, 1.0, pabs_dxdy );
+
   vec4 red = vec4(1.0,0.0,0.0,1.0);
   vec4 blue = vec4(0.0,0.0,1.0,1.0);
 
   vec4 lineColor = mix( red, blue, (side + 1.0) / 2.0 );
   vec4 background = vec4(1.0,1.0,1.0,1.0);
-  
+
+  vec4 stripeColor = mix(background, lineColor, presult);
   color = mix(lineColor, background, result );
-  color = mix(color, lineColor, 0.1);
+  color = mix(color, stripeColor, 0.08);
 }
