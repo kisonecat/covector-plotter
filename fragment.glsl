@@ -105,5 +105,7 @@ void main () {
 
   vec4 lineColor = mix( red, blue, (side + 1.0) / 2.0 );
   vec4 background = vec4(1.0,1.0,1.0,1.0);
+  
   color = mix(lineColor, background, result );
+  color = mix(color, lineColor, 0.1);
 }
