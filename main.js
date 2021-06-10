@@ -12,6 +12,7 @@ var Parameters = function() {
   this.f = 'x*y';
   this.g = 'x+y';
   this.boxSize = 0.1;
+  this.lineSpacing = 1;
 };
 					      
 var parameters = new Parameters();
@@ -61,7 +62,8 @@ function updateShaders() {
     var expressionF = Expression.fromText(parameters.f);
     glslFunctionF = expressionF.toGLSL();
     var expressionG = Expression.fromText(parameters.g);
-    glslFunctionG = expressionG.toGLSL();      
+    glslFunctionG = expressionG.toGLSL();
+    console.log(glslFunctionF);
     initShaders();
   } catch (err) {
     console.log(err);
@@ -84,6 +86,7 @@ function update() {
 }
 
 gui.add(parameters, 'boxSize', 0, 2 ).onChange( update ).listen();
+gui.add(parameters, 'lineSpacing', 0, 2 ).onChange( update ).listen();
 
 /*
 colorFolder.add(parameters, 'rootDarkeningSharpness', 1, 40 ).onChange( update ).listen();
@@ -150,7 +153,8 @@ function initShaders() {
   gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
  
   shaderProgram.uPanzoomMatrix = gl.getUniformLocation(shaderProgram, "uPanzoomMatrix");
-  shaderProgram.boxSize = gl.getUniformLocation(shaderProgram, "boxSize");  
+  shaderProgram.boxSize = gl.getUniformLocation(shaderProgram, "boxSize");
+  shaderProgram.lineSpacing = gl.getUniformLocation(shaderProgram, "lineSpacing");    
 
   /*
   shaderProgram.axisOpacity = gl.getUniformLocation(shaderProgram, "axisOpacity");
@@ -175,6 +179,7 @@ var viewportMatrix = mat3.create();
 function setUniforms() {
   gl.uniformMatrix3fv(shaderProgram.uPanzoomMatrix, false, panzoomMatrix);
   gl.uniform1f(shaderProgram.boxSize, parameters.boxSize);
+  gl.uniform1f(shaderProgram.lineSpacing, parameters.lineSpacing);  
   
   /*
     gl.uniform1f(shaderProgram.axisOpacity, parameters.axisOpacity);
@@ -290,9 +295,8 @@ document.querySelector("#glCanvas").addEventListener("mousemove", function(e) {
   inverse[6] = -inverse[6];
   inverse[7] = -inverse[7];
   vec2.transformMat3( point, point, inverse );
-  console.log( point[0] );
-  gl.uniform1f(shaderProgram.variables["u"], point[0]);
-  gl.uniform1f(shaderProgram.variables["v"], point[1]);
+  gl.uniform2fv(shaderProgram.variables["u"], [point[0],0.0]);
+  gl.uniform2fv(shaderProgram.variables["v"], [point[1],0.0]);
   window.requestAnimationFrame(drawScene);
 });
 
